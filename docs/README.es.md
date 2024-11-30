@@ -76,6 +76,7 @@ Antes de comenzar, asegúrate de haber cumplido con los siguientes requisitos:
 
    Asegúrate de que las dependencias del proyecto estén instaladas. Esto se puede hacer automáticamente utilizando el archivo `pom.xml` de Maven, el cual gestionará las dependencias necesarias para la aplicación.
 
+
 4. **Configura las variables de entorno:**
 
    Agrega las siguientes variables de entorno necesarias para el funcionamiento de la aplicación. Esto puede hacerse ya sea en tu IDE o en tu sistema operativo:
@@ -100,11 +101,13 @@ Antes de comenzar, asegúrate de haber cumplido con los siguientes requisitos:
 
    La clase principal de la aplicación es `BibliotecaApplication`. Ejecuta esta clase para iniciar el servidor.
 
-6. **Configuración para la carga de archivos:**
 
-   Para almacenar archivos como las portadas de los libros, crea una carpeta `uploads` y dentro de ella una subcarpeta `covers`. Las imágenes se almacenarán en esta ubicación, y podrás acceder a ellas usando rutas como:
+ 6. **Configuración para la carga de archivos:**
+
+    En la raíz del proyecto, crea una carpeta llamada `uploads` y dentro de ella, una subcarpeta denominada `covers`. Esta estructura se utilizará para almacenar las portadas de los libros. Las imágenes se guardarán en la carpeta `uploads/covers`, y podrás acceder a ellas mediante rutas relativas en la API, por ejemplo:
 
     - `http://localhost:8080/api/covers/cover.jpg`
+
 
 ## Arquitectura
 

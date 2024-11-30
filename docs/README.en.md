@@ -76,6 +76,7 @@ Before starting, make sure you have the following prerequisites:
 
    Ensure that the project dependencies are installed. This can be done automatically using the `pom.xml` file with Maven, which will manage the necessary dependencies for the application.
 
+
 4. **Configure environment variables:**
 
    Add the following environment variables necessary for the application's operation. You can do this either in your IDE or in your operating system:
@@ -95,15 +96,17 @@ Before starting, make sure you have the following prerequisites:
 
    Replace the example values with your actual configuration details.
 
+
 5. **Start the application:**
 
    The main application class is `BibliotecaApplication`. Run this class to start the server.
 
-6. **File upload configuration:**
 
-   To store files like book covers, create an `uploads` folder and within it a subfolder `covers`. Images will be stored in this location, and you can access them via routes like:
+6. **File Upload Configuration:**
 
-    - `http://localhost:8080/api/covers/cover.jpg`
+    In the root of the project, create a folder named `uploads` and inside it, a subfolder called `covers`. This structure will be used to store the book covers. The images will be saved in the `uploads/covers` folder, and you can access them through relative paths in the API, such as:
+
+   - `http://localhost:8080/api/covers/cover.jpg`
 
 ## Architecture
 
