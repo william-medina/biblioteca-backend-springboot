@@ -23,8 +23,8 @@ public class TokenService {
         try {
             Algorithm algorithm = Algorithm.HMAC256(jwtSecret);
             return JWT.create()
-                    .withIssuer("ForoHub")
-                    .withSubject(user.getUsername())
+                    .withIssuer("Biblioteca")
+                    .withSubject(user.getEmail())
                     .withClaim("id", user.getId())
                     .withExpiresAt(generateExpirationDate())
                     .sign(algorithm);
@@ -42,7 +42,7 @@ public class TokenService {
         try {
             Algorithm algorithm = Algorithm.HMAC256(jwtSecret);
             decodedJWT = JWT.require(algorithm)
-                    .withIssuer("ForoHub")
+                    .withIssuer("Biblioteca")
                     .build()
                     .verify(token);
         } catch (JWTVerificationException exception) {

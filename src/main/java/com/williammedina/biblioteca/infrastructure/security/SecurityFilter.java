@@ -58,10 +58,10 @@ public class SecurityFilter extends OncePerRequestFilter {
             var token = authHeader.replace("Bearer ", "");
 
             try{
-                var username = tokenService.getSubjectFromToken(token);
-                if (username != null) {
+                var email = tokenService.getSubjectFromToken(token);
+                if (email != null) {
                     // Token valido
-                    var user = userRepository.findByEmail(username);
+                    var user = userRepository.findByEmail(email);
                     var authentication = new UsernamePasswordAuthenticationToken(user, null,
                             user.getAuthorities());
                     SecurityContextHolder.getContext().setAuthentication(authentication);
