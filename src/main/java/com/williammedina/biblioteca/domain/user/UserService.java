@@ -2,8 +2,9 @@ package com.williammedina.biblioteca.domain.user;
 
 import com.williammedina.biblioteca.domain.user.dto.LoginUserDTO;
 import com.williammedina.biblioteca.domain.user.dto.UserDTO;
-import com.williammedina.biblioteca.infrastructure.errors.AppException;
+import com.williammedina.biblioteca.infrastructure.exception.AppException;
 import com.williammedina.biblioteca.infrastructure.security.TokenService;
+import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -40,7 +41,7 @@ public class UserService {
 
     private void checkIfUserExists(String email) {
         if (!userRepository.existsByEmail(email)) {
-            throw new AppException("Usuario no registrado", "CONFLICT");
+            throw new AppException("Usuario no registrado", HttpStatus.CONFLICT);
         }
     }
 

@@ -3,7 +3,7 @@ package com.williammedina.biblioteca.controller;
 import com.williammedina.biblioteca.domain.user.UserService;
 import com.williammedina.biblioteca.domain.user.dto.LoginUserDTO;
 import com.williammedina.biblioteca.domain.user.dto.UserDTO;
-import com.williammedina.biblioteca.infrastructure.errors.ErrorResponse;
+import com.williammedina.biblioteca.infrastructure.exception.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;

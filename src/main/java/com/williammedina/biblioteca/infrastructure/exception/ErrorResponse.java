@@ -1,4 +1,4 @@
-package com.williammedina.biblioteca.infrastructure.errors;
+package com.williammedina.biblioteca.infrastructure.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

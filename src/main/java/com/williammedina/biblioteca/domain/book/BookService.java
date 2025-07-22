@@ -1,7 +1,8 @@
 package com.williammedina.biblioteca.domain.book;
 
 import com.williammedina.biblioteca.domain.book.dto.*;
-import com.williammedina.biblioteca.infrastructure.errors.AppException;
+import com.williammedina.biblioteca.infrastructure.exception.AppException;
+import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -222,16 +223,16 @@ public class BookService {
 
 
     private Book findBookByIsbn(Long isbn) {
-        return bookRepository.findByIsbn(isbn).orElseThrow(() -> new AppException("Book not found.", "NOT_FOUND"));
+        return bookRepository.findByIsbn(isbn).orElseThrow(() -> new AppException("Book not found.", HttpStatus.NOT_FOUND));
     }
     private void existsByIsbn(Long isbn) {
         if (bookRepository.existsByIsbn(isbn)) {
-            throw new AppException("Un libro con ese ISBN ya existe.", "CONFLICT");
+            throw new AppException("Un libro con ese ISBN ya existe.", HttpStatus.CONFLICT);
         }
     }
     private void existsByLocation(String location) {
         if (bookRepository.existsByLocation(location)) {
-            throw new AppException("Un libro ya tiene esa ubicación.", "CONFLICT");
+            throw new AppException("Un libro ya tiene esa ubicación.", HttpStatus.CONFLICT);
         }
     }
 
@@ -240,7 +241,7 @@ public class BookService {
         if (filename != null && filename.contains(".")) {
             String extension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
             if (!"jpg".equals(extension)) {
-                throw new AppException("Solo se permiten archivos con extensión .jpg", "BAD_REQUEST");
+                throw new AppException("Solo se permiten archivos con extensión .jpg", HttpStatus.BAD_REQUEST);
             }
 
             return extension;

@@ -6,7 +6,7 @@ import com.williammedina.biblioteca.domain.book.dto.BookCountDTO;
 import com.williammedina.biblioteca.domain.book.dto.BookDTO;
 import com.williammedina.biblioteca.domain.book.dto.InputBookDTO;
 import com.williammedina.biblioteca.domain.book.dto.LocationDTO;
-import com.williammedina.biblioteca.infrastructure.errors.ErrorResponse;
+import com.williammedina.biblioteca.infrastructure.exception.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
