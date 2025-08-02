@@ -1,5 +1,6 @@
 package com.williammedina.biblioteca.infrastructure.exception;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
@@ -10,23 +11,27 @@ import org.springframework.web.bind.annotation.RestControllerAdvice;
 import java.util.Comparator;
 import java.util.List;
 
+@Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
 
     @ExceptionHandler(BadCredentialsException.class)
     public ResponseEntity<ErrorResponse> handleBadCredentialsException(BadCredentialsException ex) {
+        log.warn("Authentication attempt failed: {}", ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse("Password incorrecto.");
         return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(errorResponse);
     }
 
     @ExceptionHandler(AppException.class)
     public ResponseEntity<ErrorResponse> handleAppException(AppException ex) {
+        log.error("Application error: {}", ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse(ex.getMessage());
         return ResponseEntity.status(ex.getHttpStatus()).body(errorResponse);
     }
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ErrorResponse> handleUnknownHostException(Exception ex) {
+        log.error("Unexpected error: {}", ex.getMessage());
         ErrorResponse errorResponse = new ErrorResponse("Internal Server Error: " + ex.getMessage());
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(errorResponse);
     }
@@ -34,6 +39,7 @@ public class GlobalExceptionHandler {
     // Manejo de errores de validación de formulario (MethodArgumentNotValidException)
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
+        log.warn("Field validation error in DTO: {}", exception.getMessage());
 
         //O rden jerárquico de los campos
         List<String> fieldPriorityOrder = List.of("email", "password", "isbn", "title", "author", "publisher" ,"publicationYear", "location");

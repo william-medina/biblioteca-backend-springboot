@@ -2,6 +2,7 @@ package com.williammedina.biblioteca.domain.book;
 
 import com.williammedina.biblioteca.domain.book.dto.*;
 import com.williammedina.biblioteca.infrastructure.exception.AppException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -14,6 +15,7 @@ import java.nio.file.Paths;
 import java.nio.file.StandardCopyOption;
 import java.util.*;
 
+@Slf4j
 @Service
 public class BookService {
 
@@ -26,6 +28,8 @@ public class BookService {
 
     @Transactional(readOnly = true)
     public List<BookDTO> getAllBooks(String sortBy) {
+        log.debug("Getting all books sorted by: {}", sortBy);
+
         List<Book> books = switch (sortBy) {
             case "author" -> bookRepository.findAllOrderByAuthor();
             case "publisher" -> bookRepository.findAllOrderByPublisher();
@@ -38,6 +42,7 @@ public class BookService {
 
     @Transactional(readOnly = true)
     public List<BookDTO> getBooksByKeyword(String keyword) {
+        log.debug("Getting books by keyword: {}", keyword);
         if (keyword.equals("+")) {
             return bookRepository.findAll().stream().map(this::toBookDTO).toList();
         } else {
@@ -47,24 +52,28 @@ public class BookService {
 
     @Transactional(readOnly = true)
     public BookDTO getBookByISBN(Long isbn) {
+        log.debug("Getting details for book with ISBN: {}", isbn);
         Book book = findBookByIsbn(isbn);
         return toBookDTO(book);
     }
 
     @Transactional(readOnly = true)
     public BookCountDTO getBookCount() {
+        log.debug("Getting the total number of books stored");
         Long count = bookRepository.count();
         return new BookCountDTO(count);
     }
 
     @Transactional(readOnly = true)
     public List<BookDTO> getRandomBooks(Long count) {
+        log.debug("Getting ({}) random books", count);
         return bookRepository.findRandomBooks(count).stream().map(this::toBookDTO).toList();
     }
 
 
     @Transactional
     public String addNewBook(InputBookDTO data) {
+            log.info("Adding new book");
 
             existsByIsbn(data.isbn());
             existsByLocation(data.location());
@@ -88,14 +97,17 @@ public class BookService {
                 Files.copy(data.cover().getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
             }
 
+            log.info("Book added with ID: {}", book.getId());
             return "Libro almacenado correctamente";
         } catch (IOException e) {
+            log.error("Error saving book cover: {}", e.getMessage());
             throw new RuntimeException("Error al guardar la portada", e);
         }
     }
 
     @Transactional
     public String updateBook(InputBookDTO data, Long isbn) {
+        log.info("Updating book");
         Book book = findBookByIsbn(isbn);
 
         if (!book.getIsbn().equals(data.isbn())) {
@@ -124,9 +136,11 @@ public class BookService {
                 Files.copy(data.cover().getInputStream(), path, StandardCopyOption.REPLACE_EXISTING);
             }
 
+            log.info("Book updated with ID: {}", book.getId());
             return "Libro actualizado correctamente";
         } catch (IOException e) {
-            throw new RuntimeException("Error al guardar la portada", e);
+            log.error("Error update book cover: {}", e.getMessage());
+            throw new RuntimeException("Error al actualizar la portada", e);
         }
     }
 
@@ -142,13 +156,18 @@ public class BookService {
                 Files.delete(filePath);
             }
             bookRepository.delete(book);
+            log.info("Book deleted with ID: {}", book.getId());
+
         } catch (IOException e) {
+            log.error("Error delete book cover: {}", e.getMessage());
             throw new RuntimeException("Error al eliminar el archivo de portada para el libro con ISBN: " + isbn, e);
         }
     }
 
     @Transactional(readOnly = true)
     public List<LocationDTO> getLocationBooks() {
+        log.debug("Getting book location structure");
+
         List<Book> books = bookRepository.findAll();
         Map<String, LocationDTO> locationBooks = new HashMap<>();
 
@@ -172,11 +191,13 @@ public class BookService {
                         try {
                             number = Integer.parseInt(position.substring(1));
                         } catch (NumberFormatException e) {
+                            log.warn("Invalid position number for book ID {}: {}", book.getId(), position);
                             continue; // Si no se puede convertir a número, ignoramos este libro
                         }
 
                         // Ignorar si no hay información válida
                         if (shelf.isEmpty() || section.isEmpty() || number == 0) {
+                            log.warn("Incomplete location data for book ID: {}", book.getId());
                             continue;
                         }
 
@@ -207,6 +228,7 @@ public class BookService {
         }
 
         // Ordenar las estanterías, secciones y libros
+        log.debug("Sorting shelves, sections, and books");
         List<LocationDTO> sortedLocationBooks = new ArrayList<>(locationBooks.values());
         sortedLocationBooks.sort(Comparator.comparing(LocationDTO::shelf));
 
@@ -218,20 +240,28 @@ public class BookService {
             }
         }
 
+        log.info("Book location structure assembled successfully");
         return sortedLocationBooks;
     }
 
 
     private Book findBookByIsbn(Long isbn) {
-        return bookRepository.findByIsbn(isbn).orElseThrow(() -> new AppException("Book not found.", HttpStatus.NOT_FOUND));
+        return bookRepository.findByIsbn(isbn)
+                .orElseThrow(() -> {
+                    log.error("Book not found with ISBN: {}", isbn);
+                    return new AppException("Book not found.", HttpStatus.NOT_FOUND);
+                });
     }
+
     private void existsByIsbn(Long isbn) {
         if (bookRepository.existsByIsbn(isbn)) {
+            log.warn("A book with ISBN {} already exists", isbn);
             throw new AppException("Un libro con ese ISBN ya existe.", HttpStatus.CONFLICT);
         }
     }
     private void existsByLocation(String location) {
         if (bookRepository.existsByLocation(location)) {
+            log.warn("A book already exists at location: {}", location);
             throw new AppException("Un libro ya tiene esa ubicación.", HttpStatus.CONFLICT);
         }
     }
@@ -241,11 +271,13 @@ public class BookService {
         if (filename != null && filename.contains(".")) {
             String extension = filename.substring(filename.lastIndexOf(".") + 1).toLowerCase();
             if (!"jpg".equals(extension)) {
+                log.error("Invalid file extension: .{} (only .jpg is allowed)", extension);
                 throw new AppException("Solo se permiten archivos con extensión .jpg", HttpStatus.BAD_REQUEST);
             }
 
             return extension;
         }
+        log.warn("File does not have a valid extension: {}", filename);
         return "";
     }
 

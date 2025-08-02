@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.UrlResource;
 import org.springframework.http.HttpHeaders;
@@ -18,6 +19,7 @@ import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 
+@Slf4j
 @RestController
 @RequestMapping(value = "/covers")
 @Tag(name = "Covers", description = "Endpoints for managing book cover images")
@@ -41,6 +43,7 @@ public class CoverController {
 
             // Verificar si el recurso existe y es legible
             if (!resource.exists() || !resource.isReadable()) {
+                log.warn("Cover image not found or unreadable: {}", filename);
                 return ResponseEntity.notFound().build();
             }
 
@@ -48,16 +51,18 @@ public class CoverController {
             String contentType = Files.probeContentType(filePath);
             if (contentType == null) {
                 contentType = "application/octet-stream";
+                log.debug("Could not determine content type for file: {}", filename);
             }
 
             // Devolver la imagen con el tipo MIME adecuado
+            log.info("Cover image found and served: {}", filename);
             return ResponseEntity.ok()
                     .contentType(MediaType.parseMediaType(contentType))
                     .header(HttpHeaders.CONTENT_DISPOSITION, "inline; filename=\"" + resource.getFilename() + "\"")
                     .body(resource);
 
         } catch (Exception e) {
-            e.printStackTrace();
+            log.error("Error retrieving cover image '{}': {}", filename, e.getMessage(), e);
             return ResponseEntity.internalServerError().build();
         }
     }

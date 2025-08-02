@@ -4,6 +4,7 @@ import com.williammedina.biblioteca.domain.user.dto.LoginUserDTO;
 import com.williammedina.biblioteca.domain.user.dto.UserDTO;
 import com.williammedina.biblioteca.infrastructure.exception.AppException;
 import com.williammedina.biblioteca.infrastructure.security.TokenService;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -12,6 +13,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+@Slf4j
 @Service
 public class UserService {
 
@@ -27,20 +29,28 @@ public class UserService {
 
     @Transactional
     public String authenticateAndGenerateToken(LoginUserDTO data) {
+        log.info("Attempting to authenticate user: {}", data.email());
+
         checkIfUserExists(data.email());
         Authentication authenticationToken = new UsernamePasswordAuthenticationToken(data.email(), data.password());
         Authentication authenticatedUser = authenticationManager.authenticate(authenticationToken);
+        User user = (User) authenticatedUser.getPrincipal();
+
+        log.info("User authenticated successfully. ID: {}", user.getId());
+
         return tokenService.generateToken((User) authenticatedUser.getPrincipal());
     }
 
     @Transactional(readOnly = true)
     public UserDTO getCurrentUser() {
         User user = getAuthenticatedUser();
-        return toUserDTO(user);
+        log.debug("Retrieving user data. ID: {}", user.getId());
+        return UserDTO.fromEntity(user);
     }
 
     private void checkIfUserExists(String email) {
         if (!userRepository.existsByEmail(email)) {
+            log.error("Email not registered: {}", email);
             throw new AppException("Usuario no registrado", HttpStatus.CONFLICT);
         }
     }
@@ -52,15 +62,8 @@ public class UserService {
             return (User) authentication.getPrincipal();
         }
 
+        log.error("Failed to retrieve a valid authenticated user");
         throw new IllegalStateException("El usuario autenticado no es válido.");
     }
-
-    public UserDTO toUserDTO(User user) {
-        return new UserDTO(
-                user.getId(),
-                user.getEmail()
-        );
-    }
-
 
 }
