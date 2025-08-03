@@ -8,8 +8,11 @@ import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 
+import java.lang.reflect.Field;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Slf4j
 @RestControllerAdvice
@@ -41,23 +44,36 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ErrorResponse> handleMethodArgumentNotValidException(MethodArgumentNotValidException exception) {
         log.warn("Field validation error in DTO: {}", exception.getMessage());
 
-        //O rden jerárquico de los campos
-        List<String> fieldPriorityOrder = List.of("email", "password", "isbn", "title", "author", "publisher" ,"publicationYear", "location");
+        // Obtiene la clase del DTO asociado a la solicitud actual
+        Class<?> dtoClass = Optional.ofNullable(exception.getBindingResult().getTarget())
+                .map(Object::getClass)
+                .orElse(null);
 
-        ErrorResponse error = exception.getFieldErrors()
-                .stream()
-                .sorted(Comparator.comparingInt(fieldError -> {
+        // Si no se obtiene la clase del DTO, devolver el primer error sin ordenar
+        if (dtoClass == null) {
+            return exception.getFieldErrors().stream()
+                    .findFirst()
+                    .map(fieldError -> ResponseEntity.badRequest().body(new ErrorResponse(fieldError.getDefaultMessage())))
+                    .orElseGet(() -> ResponseEntity.badRequest().build());
+        }
+
+        // Obtiene la lista de nombres de los campos en el orden en que fueron definidos en el DTO
+        List<String> fieldPriorityOrder = getFieldOrder(dtoClass);
+
+        // Ordena los errores de validación según el orden de los campos en el DTO y devuelve solo el primero
+        return exception.getFieldErrors().stream()
+                .min(Comparator.comparingInt(fieldError -> {
                     int index = fieldPriorityOrder.indexOf(fieldError.getField());
                     return index == -1 ? Integer.MAX_VALUE : index;
                 }))
-                .map(fieldError -> new ErrorResponse(fieldError.getDefaultMessage()))
-                .findFirst()
-                .orElse(null);
+                .map(fieldError -> ResponseEntity.badRequest().body(new ErrorResponse(fieldError.getDefaultMessage())))
+                .orElseGet(() -> ResponseEntity.badRequest().build());
+    }
 
-        if (error != null) {
-            return ResponseEntity.badRequest().body(error);
-        } else {
-            return ResponseEntity.badRequest().build();
-        }
+    // Obtiene los nombres de los campos de un DTO en el orden en que fueron definidos.
+    private List<String> getFieldOrder(Class<?> dtoClass) {
+        return List.of(dtoClass.getDeclaredFields()).stream()
+                .map(Field::getName)
+                .collect(Collectors.toList());
     }
 }
