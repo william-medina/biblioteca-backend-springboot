@@ -1,6 +1,6 @@
 package com.williammedina.biblioteca.domain.user.dto;
 
-import com.williammedina.biblioteca.domain.user.User;
+import com.williammedina.biblioteca.domain.user.entity.User;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "Public user information")

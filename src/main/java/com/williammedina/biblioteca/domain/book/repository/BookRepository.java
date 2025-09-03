@@ -1,6 +1,6 @@
-package com.williammedina.biblioteca.domain.book;
+package com.williammedina.biblioteca.domain.book.repository;
 
-import com.williammedina.biblioteca.domain.book.dto.BookDTO;
+import com.williammedina.biblioteca.domain.book.entity.Book;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;

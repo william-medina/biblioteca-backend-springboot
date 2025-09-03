@@ -1,7 +1,7 @@
 package com.williammedina.biblioteca.controller;
 
 
-import com.williammedina.biblioteca.domain.book.BookService;
+import com.williammedina.biblioteca.domain.book.service.BookService;
 import com.williammedina.biblioteca.domain.book.dto.BookCountDTO;
 import com.williammedina.biblioteca.domain.book.dto.BookDTO;
 import com.williammedina.biblioteca.domain.book.dto.InputBookDTO;
@@ -14,6 +14,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -23,13 +24,10 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/books", produces = "application/json")
 @Tag(name = "Books", description = "Endpoints for managing book information, including search, registration, updating, and deletion.")
+@AllArgsConstructor
 public class BookController {
 
     private final BookService bookService;
-
-    public BookController(BookService bookService) {
-         this.bookService = bookService;
-     }
 
     @Operation(
             summary = "Get all books sorted by a specific criterion",

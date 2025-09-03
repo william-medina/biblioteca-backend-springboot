@@ -1,6 +1,6 @@
 package com.williammedina.biblioteca.controller;
 
-import com.williammedina.biblioteca.domain.user.UserService;
+import com.williammedina.biblioteca.domain.user.service.UserService;
 import com.williammedina.biblioteca.domain.user.dto.LoginUserDTO;
 import com.williammedina.biblioteca.domain.user.dto.UserDTO;
 import com.williammedina.biblioteca.infrastructure.exception.ErrorResponse;
@@ -11,20 +11,17 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
+import lombok.AllArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping(value = "/auth", produces = "application/json")
 @Tag(name = "Auth", description = "Endpoints for user authentication.")
+@AllArgsConstructor
 public class AuthController {
 
     private final UserService userService;
-
-    public AuthController(UserService userService) {
-        this.userService = userService;
-    }
-
 
     @Operation(
             summary = "Log in",

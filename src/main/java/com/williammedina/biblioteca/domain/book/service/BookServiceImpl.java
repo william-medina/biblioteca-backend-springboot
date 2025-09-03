@@ -1,7 +1,10 @@
-package com.williammedina.biblioteca.domain.book;
+package com.williammedina.biblioteca.domain.book.service;
 
 import com.williammedina.biblioteca.domain.book.dto.*;
+import com.williammedina.biblioteca.domain.book.entity.Book;
+import com.williammedina.biblioteca.domain.book.repository.BookRepository;
 import com.williammedina.biblioteca.infrastructure.exception.AppException;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
@@ -17,15 +20,13 @@ import java.util.*;
 
 @Slf4j
 @Service
-public class BookService {
+@AllArgsConstructor
+public class BookServiceImpl implements BookService {
 
-    public final BookRepository bookRepository;
+    private final BookRepository bookRepository;
     private final String uploadDir = "uploads/covers";
 
-    public BookService(BookRepository bookRepository) {
-        this.bookRepository = bookRepository;
-    }
-
+    @Override
     @Transactional(readOnly = true)
     public List<BookDTO> getAllBooks(String sortBy) {
         log.debug("Getting all books sorted by: {}", sortBy);
@@ -40,6 +41,7 @@ public class BookService {
         return books.stream().map(this::toBookDTO).toList();
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<BookDTO> getBooksByKeyword(String keyword) {
         log.debug("Getting books by keyword: {}", keyword);
@@ -50,6 +52,7 @@ public class BookService {
         }
     }
 
+    @Override
     @Transactional(readOnly = true)
     public BookDTO getBookByISBN(Long isbn) {
         log.debug("Getting details for book with ISBN: {}", isbn);
@@ -57,6 +60,7 @@ public class BookService {
         return toBookDTO(book);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public BookCountDTO getBookCount() {
         log.debug("Getting the total number of books stored");
@@ -64,13 +68,14 @@ public class BookService {
         return new BookCountDTO(count);
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<BookDTO> getRandomBooks(Long count) {
         log.debug("Getting ({}) random books", count);
         return bookRepository.findRandomBooks(count).stream().map(this::toBookDTO).toList();
     }
 
-
+    @Override
     @Transactional
     public String addNewBook(InputBookDTO data) {
             log.info("Adding new book");
@@ -105,6 +110,7 @@ public class BookService {
         }
     }
 
+    @Override
     @Transactional
     public String updateBook(InputBookDTO data, Long isbn) {
         log.info("Updating book");
@@ -144,6 +150,7 @@ public class BookService {
         }
     }
 
+    @Override
     @Transactional
     public void deleteBook(Long isbn) {
         Book book = findBookByIsbn(isbn);
@@ -164,6 +171,7 @@ public class BookService {
         }
     }
 
+    @Override
     @Transactional(readOnly = true)
     public List<LocationDTO> getLocationBooks() {
         log.debug("Getting book location structure");

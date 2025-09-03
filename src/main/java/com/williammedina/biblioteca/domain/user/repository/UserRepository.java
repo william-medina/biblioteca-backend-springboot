@@ -1,7 +1,7 @@
-package com.williammedina.biblioteca.domain.user;
+package com.williammedina.biblioteca.domain.user.repository;
 
+import com.williammedina.biblioteca.domain.user.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.security.core.userdetails.UserDetails;
 
 import java.util.Optional;
 

@@ -1,9 +1,12 @@
-package com.williammedina.biblioteca.domain.user;
+package com.williammedina.biblioteca.domain.user.service;
 
 import com.williammedina.biblioteca.domain.user.dto.LoginUserDTO;
 import com.williammedina.biblioteca.domain.user.dto.UserDTO;
+import com.williammedina.biblioteca.domain.user.entity.User;
+import com.williammedina.biblioteca.domain.user.repository.UserRepository;
 import com.williammedina.biblioteca.infrastructure.exception.AppException;
 import com.williammedina.biblioteca.infrastructure.security.TokenService;
+import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -15,18 +18,15 @@ import org.springframework.transaction.annotation.Transactional;
 
 @Slf4j
 @Service
-public class UserService {
+@AllArgsConstructor
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
     private final TokenService tokenService;
     private final AuthenticationManager authenticationManager;
 
-    public UserService(UserRepository userRepository, TokenService tokenService, AuthenticationManager authenticationManager) {
-        this.userRepository = userRepository;
-        this.tokenService = tokenService;
-        this.authenticationManager = authenticationManager;
-    }
 
+    @Override
     @Transactional
     public String authenticateAndGenerateToken(LoginUserDTO data) {
         log.info("Attempting to authenticate user: {}", data.email());
@@ -41,6 +41,7 @@ public class UserService {
         return tokenService.generateToken((User) authenticatedUser.getPrincipal());
     }
 
+    @Override
     @Transactional(readOnly = true)
     public UserDTO getCurrentUser() {
         User user = getAuthenticatedUser();

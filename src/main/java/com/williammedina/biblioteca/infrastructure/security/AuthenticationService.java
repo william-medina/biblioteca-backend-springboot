@@ -1,6 +1,6 @@
 package com.williammedina.biblioteca.infrastructure.security;
 
-import com.williammedina.biblioteca.domain.user.UserRepository;
+import com.williammedina.biblioteca.domain.user.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;

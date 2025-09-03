@@ -1,4 +1,4 @@
-package com.williammedina.biblioteca.domain.book;
+package com.williammedina.biblioteca.domain.book.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
