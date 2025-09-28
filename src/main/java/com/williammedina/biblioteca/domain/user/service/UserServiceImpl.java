@@ -2,7 +2,7 @@ package com.williammedina.biblioteca.domain.user.service;
 
 import com.williammedina.biblioteca.domain.user.dto.LoginUserDTO;
 import com.williammedina.biblioteca.domain.user.dto.UserDTO;
-import com.williammedina.biblioteca.domain.user.entity.User;
+import com.williammedina.biblioteca.domain.user.entity.UserEntity;
 import com.williammedina.biblioteca.domain.user.repository.UserRepository;
 import com.williammedina.biblioteca.infrastructure.exception.AppException;
 import com.williammedina.biblioteca.infrastructure.security.TokenService;
@@ -34,17 +34,17 @@ public class UserServiceImpl implements UserService {
         checkIfUserExists(data.email());
         Authentication authenticationToken = new UsernamePasswordAuthenticationToken(data.email(), data.password());
         Authentication authenticatedUser = authenticationManager.authenticate(authenticationToken);
-        User user = (User) authenticatedUser.getPrincipal();
+        UserEntity user = (UserEntity) authenticatedUser.getPrincipal();
 
         log.info("User authenticated successfully. ID: {}", user.getId());
 
-        return tokenService.generateToken((User) authenticatedUser.getPrincipal());
+        return tokenService.generateToken((UserEntity) authenticatedUser.getPrincipal());
     }
 
     @Override
     @Transactional(readOnly = true)
     public UserDTO getCurrentUser() {
-        User user = getAuthenticatedUser();
+        UserEntity user = getAuthenticatedUser();
         log.debug("Retrieving user data. ID: {}", user.getId());
         return UserDTO.fromEntity(user);
     }
@@ -56,11 +56,11 @@ public class UserServiceImpl implements UserService {
         }
     }
 
-    public User getAuthenticatedUser() {
+    public UserEntity getAuthenticatedUser() {
         Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 
-        if (authentication.getPrincipal() instanceof User) {
-            return (User) authentication.getPrincipal();
+        if (authentication.getPrincipal() instanceof UserEntity) {
+            return (UserEntity) authentication.getPrincipal();
         }
 
         log.error("Failed to retrieve a valid authenticated user");

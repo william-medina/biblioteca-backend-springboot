@@ -1,7 +1,7 @@
 package com.williammedina.biblioteca.domain.book.service;
 
 import com.williammedina.biblioteca.domain.book.dto.*;
-import com.williammedina.biblioteca.domain.book.entity.Book;
+import com.williammedina.biblioteca.domain.book.entity.BookEntity;
 import com.williammedina.biblioteca.domain.book.repository.BookRepository;
 import com.williammedina.biblioteca.infrastructure.exception.AppException;
 import lombok.AllArgsConstructor;
@@ -31,7 +31,7 @@ public class BookServiceImpl implements BookService {
     public List<BookDTO> getAllBooks(String sortBy) {
         log.debug("Getting all books sorted by: {}", sortBy);
 
-        List<Book> books = switch (sortBy) {
+        List<BookEntity> books = switch (sortBy) {
             case "author" -> bookRepository.findAllOrderByAuthor();
             case "publisher" -> bookRepository.findAllOrderByPublisher();
             case "publication_year" -> bookRepository.findAllOrderByPublicationYear();
@@ -56,7 +56,7 @@ public class BookServiceImpl implements BookService {
     @Transactional(readOnly = true)
     public BookDTO getBookByISBN(Long isbn) {
         log.debug("Getting details for book with ISBN: {}", isbn);
-        Book book = findBookByIsbn(isbn);
+        BookEntity book = findBookByIsbn(isbn);
         return toBookDTO(book);
     }
 
@@ -83,7 +83,7 @@ public class BookServiceImpl implements BookService {
             existsByIsbn(data.isbn());
             existsByLocation(data.location());
 
-            Book book = new Book();
+            BookEntity book = new BookEntity();
             book.setIsbn(data.isbn());
             book.setTitle(data.title());
             book.setAuthor(validateAndTrim(data.author(), "S.A"));
@@ -114,7 +114,7 @@ public class BookServiceImpl implements BookService {
     @Transactional
     public String updateBook(InputBookDTO data, Long isbn) {
         log.info("Updating book");
-        Book book = findBookByIsbn(isbn);
+        BookEntity book = findBookByIsbn(isbn);
 
         if (!book.getIsbn().equals(data.isbn())) {
             existsByIsbn(data.isbn());
@@ -153,7 +153,7 @@ public class BookServiceImpl implements BookService {
     @Override
     @Transactional
     public void deleteBook(Long isbn) {
-        Book book = findBookByIsbn(isbn);
+        BookEntity book = findBookByIsbn(isbn);
 
         String fileName = isbn + ".jpg";
         Path filePath = Paths.get(uploadDir, fileName);
@@ -176,10 +176,10 @@ public class BookServiceImpl implements BookService {
     public List<LocationDTO> getLocationBooks() {
         log.debug("Getting book location structure");
 
-        List<Book> books = bookRepository.findAll();
+        List<BookEntity> books = bookRepository.findAll();
         Map<String, LocationDTO> locationBooks = new HashMap<>();
 
-        for (Book book : books) {
+        for (BookEntity book : books) {
             String location = book.getLocation();
 
             // Validar que la ubicación tenga el formato adecuado
@@ -253,7 +253,7 @@ public class BookServiceImpl implements BookService {
     }
 
 
-    private Book findBookByIsbn(Long isbn) {
+    private BookEntity findBookByIsbn(Long isbn) {
         return bookRepository.findByIsbn(isbn)
                 .orElseThrow(() -> {
                     log.error("Book not found with ISBN: {}", isbn);
@@ -296,7 +296,7 @@ public class BookServiceImpl implements BookService {
         return defaultValue;
     }
 
-    private BookDTO toBookDTO(Book book) {
+    private BookDTO toBookDTO(BookEntity book) {
         return new BookDTO(
                 book.getId(),
                 book.getIsbn(),
