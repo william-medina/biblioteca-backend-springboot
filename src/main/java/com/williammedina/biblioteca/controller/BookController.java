@@ -6,7 +6,7 @@ import com.williammedina.biblioteca.domain.book.dto.BookCountDTO;
 import com.williammedina.biblioteca.domain.book.dto.BookDTO;
 import com.williammedina.biblioteca.domain.book.dto.InputBookDTO;
 import com.williammedina.biblioteca.domain.book.dto.LocationDTO;
-import com.williammedina.biblioteca.infrastructure.exception.ErrorResponse;
+import com.williammedina.biblioteca.infrastructure.exception.ApiErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -60,7 +60,7 @@ public class BookController {
             description = "Returns the information of a book corresponding to the provided ISBN.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Book successfully retrieved"),
-                    @ApiResponse(responseCode = "404", description = "Book not found", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+                    @ApiResponse(responseCode = "404", description = "Book not found", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
             }
     )
     @GetMapping("/isbn/{isbn}")
@@ -101,7 +101,7 @@ public class BookController {
             security = @SecurityRequirement(name = "bearer-key"),
             responses = {
                     @ApiResponse(responseCode = "201", description = "Book successfully stored"),
-                    @ApiResponse(responseCode = "409", description = "Conflict while registering the book (ISBN or location already in use)")
+                    @ApiResponse(responseCode = "409", description = "Conflict while registering the book (ISBN or location already in use)", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
             }
     )
     @PostMapping(consumes = "multipart/form-data")
@@ -116,7 +116,7 @@ public class BookController {
             security = @SecurityRequirement(name = "bearer-key"),
             responses = {
                     @ApiResponse(responseCode = "200", description = "Book successfully updated"),
-                    @ApiResponse(responseCode = "404", description = "Book not found")
+                    @ApiResponse(responseCode = "404", description = "Book not found", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
             }
     )
     @PutMapping(value = "/{isbn}", consumes = "multipart/form-data")
@@ -131,7 +131,7 @@ public class BookController {
             security = @SecurityRequirement(name = "bearer-key"),
             responses = {
                     @ApiResponse(responseCode = "204", description = "Book successfully deleted", content = @Content),
-                    @ApiResponse(responseCode = "404", description = "Book not found")
+                    @ApiResponse(responseCode = "404", description = "Book not found", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
             }
     )
     @DeleteMapping("/{isbn}")

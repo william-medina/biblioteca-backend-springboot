@@ -3,7 +3,7 @@ package com.williammedina.biblioteca.controller;
 import com.williammedina.biblioteca.domain.user.service.UserService;
 import com.williammedina.biblioteca.domain.user.dto.LoginUserDTO;
 import com.williammedina.biblioteca.domain.user.dto.UserDTO;
-import com.williammedina.biblioteca.infrastructure.exception.ErrorResponse;
+import com.williammedina.biblioteca.infrastructure.exception.ApiErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -28,8 +28,8 @@ public class AuthController {
             description = "Authenticates the user and generates a JWT token for authenticated sessions.",
             responses = {
                     @ApiResponse(responseCode = "200", description = "Authentication successful", content = @Content(schema = @Schema(example = "token"))),
-                    @ApiResponse(responseCode = "400", description = "Invalid request data", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
-                    @ApiResponse(responseCode = "401", description = "User does not exist or incorrect password", content = @Content(schema = @Schema(implementation = ErrorResponse.class))),
+                    @ApiResponse(responseCode = "400", description = "Invalid request data", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
+                    @ApiResponse(responseCode = "401", description = "User does not exist or incorrect password", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class))),
             }
     )
     @PostMapping("/login")
@@ -44,7 +44,7 @@ public class AuthController {
             security = @SecurityRequirement(name = "bearer-key"),
             responses = {
                     @ApiResponse(responseCode = "200", description = "User details retrieved successfully"),
-                    @ApiResponse(responseCode = "401", description = "Unauthorized - invalid bearer token", content = @Content(schema = @Schema(implementation = ErrorResponse.class)))
+                    @ApiResponse(responseCode = "401", description = "Unauthorized - invalid bearer token", content = @Content(schema = @Schema(implementation = ApiErrorResponse.class)))
             }
     )
     @GetMapping("/me")
