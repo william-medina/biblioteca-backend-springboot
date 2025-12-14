@@ -105,8 +105,8 @@ public class BookController {
             }
     )
     @PostMapping(consumes = "multipart/form-data")
-    public ResponseEntity<String> addNewBook(@Valid @ModelAttribute InputBookDTO data) {
-         String message = bookService.addNewBook(data);
+    public ResponseEntity<String> addNewBook(@Valid @ModelAttribute InputBookDTO bookRequest) {
+        String message = bookService.addNewBook(bookRequest);
         return ResponseEntity.status(HttpStatus.CREATED).body(message);
     }
 
@@ -120,8 +120,8 @@ public class BookController {
             }
     )
     @PutMapping(value = "/{isbn}", consumes = "multipart/form-data")
-    public ResponseEntity<String> updateBook(@Valid @ModelAttribute InputBookDTO data, @PathVariable Long isbn) {
-        String message = bookService.updateBook(data, isbn);
+    public ResponseEntity<String> updateBook(@Valid @ModelAttribute InputBookDTO bookRequest, @PathVariable Long isbn) {
+        String message = bookService.updateBook(bookRequest, isbn);
         return ResponseEntity.ok(message);
     }
 

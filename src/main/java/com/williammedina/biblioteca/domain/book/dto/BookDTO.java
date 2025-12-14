@@ -1,5 +1,6 @@
 package com.williammedina.biblioteca.domain.book.dto;
 
+import com.williammedina.biblioteca.domain.book.entity.BookEntity;
 import io.swagger.v3.oas.annotations.media.Schema;
 
 @Schema(description = "DTO containing general book data")
@@ -26,4 +27,16 @@ public record BookDTO(
         @Schema(description = "Shelf location of the book in the library", example = "P-A12")
         String location
 ) {
+
+    public static BookDTO fromEntity(BookEntity book) {
+        return new BookDTO(
+                book.getId(),
+                book.getIsbn(),
+                book.getTitle(),
+                book.getAuthor(),
+                book.getPublisher(),
+                book.getPublicationYear(),
+                book.getLocation()
+        );
+    }
 }

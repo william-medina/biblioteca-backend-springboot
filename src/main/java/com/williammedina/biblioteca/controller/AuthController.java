@@ -33,8 +33,8 @@ public class AuthController {
             }
     )
     @PostMapping("/login")
-    public ResponseEntity<String> login(@RequestBody @Valid LoginUserDTO data){
-        String responseToken = userService.authenticateAndGenerateToken(data);
+    public ResponseEntity<String> login(@RequestBody @Valid LoginUserDTO request){
+        String responseToken = userService.authenticateAndGenerateToken(request);
         return ResponseEntity.ok(responseToken);
     }
 
