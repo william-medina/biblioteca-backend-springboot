@@ -29,7 +29,7 @@ public class UserServiceImpl implements UserService {
     public String authenticateAndGenerateToken(LoginUserDTO data) {
         log.info("Attempting to authenticate user: {}", data.email());
 
-        validator.checkIfUserExists(data.email());
+        validator.ensureUserExists(data.email());
         Authentication authenticationToken = new UsernamePasswordAuthenticationToken(data.email(), data.password());
         Authentication authenticatedUser = authenticationManager.authenticate(authenticationToken);
         UserEntity user = (UserEntity) authenticatedUser.getPrincipal();

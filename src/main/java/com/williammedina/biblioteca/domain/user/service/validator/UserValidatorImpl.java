@@ -15,7 +15,7 @@ public class UserValidatorImpl implements UserValidator {
     private final UserRepository userRepository;
 
     @Override
-    public void checkIfUserExists(String email) {
+    public void ensureUserExists(String email) {
         if (!userRepository.existsByEmail(email)) {
             log.error("Email not registered: {}", email);
             throw new AppException("Usuario no registrado", HttpStatus.CONFLICT);
